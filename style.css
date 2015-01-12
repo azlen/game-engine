@@ -1,0 +1,250 @@
+html,body{
+	padding:0px;
+	margin:0px;
+	height:100%;
+	width:100%;
+	display:flex;
+	flex-direction:column;
+	font-family:"Source Sans Pro", "Lato", sans-serif;
+}
+h1,h2,h3,h4,h5,h6,ul{
+	margin:0px;
+}
+#content{
+	flex:1;
+	display:flex;
+}
+#container{
+	flex:1;
+	display:flex;
+}
+#sidebar{
+	flex:0 0 1;
+	width:250px;
+	background-color:#fafafa;
+	border-right:1px solid #cacaca;
+	border-top:1px solid #eaeaea;
+	color:#555;
+}
+
+#sidebar h2{
+	color:#999;
+	margin:10px 20px;
+}
+
+#list{
+	list-style-type:none;
+	padding:0px;
+	margin:0px;
+	overflow-y:scroll; /* FIX THE OVERFLOW */ /* WE NEED TO SPECIFY A HEIGHT (OR MAYBE USE FLEX) */
+	overflow-x:hidden;
+}
+
+#list li{
+	padding:7px 20px;
+	padding-top:0px;
+	cursor:pointer;
+	height:20px;
+	font-size:20px;
+	font-weight:700;
+}
+.stepview #list li{
+	padding-top:3px;
+	padding-bottom:4px;
+	font-size:15px;
+}
+#list li:first-letter{
+	text-transform: uppercase;
+}
+#list li.selected{
+	background-color:#ccc;
+}
+#list li:hover{
+	color:#fff;
+	padding-left:20px;
+	background-color:#45a6f7;
+}
+
+#svg-container{
+	flex:1;
+	display:flex;
+	flex-direction:column;
+	padding-top:0px;
+}
+#header{
+	color:#45a6f7;
+	flex:0 0 1;
+	background-color:#fefefe;
+	border-bottom:1px solid #cacaca;
+	padding:5px 20px;
+	cursor:default;
+	box-shadow:0px 1px 3px rgba(0,0,0,0.1);
+	z-index:1000;
+}
+#header h1 sub{
+	color:#ccc;
+	font-size:15px;
+	vertical-align: baseline;
+}
+#svg-container > div{
+	flex:1;
+	display:flex;
+	position:relative;
+	flex-direction:column;
+}
+#svg-container svg{
+	flex:1;
+	background-image:url('transp_bg.png');
+	background-color:#fff;
+	border-left:1px solid #eaeaea;
+	border-top:1px solid #eaeaea;
+	position:relative;
+}
+
+.btn{
+	font-weight:700;
+	font-size:20px;
+	display:block;
+	background:none;
+	color:#45a6f7;
+	border:2px solid #45a6f7;
+	border-radius:20px;
+	margin:20px;
+	width:210px;
+	cursor:pointer;
+	outline:none;
+	transition:all .2s;
+	text-align:center;
+	position:relative;
+	height:32px;
+	box-sizing:border-box;
+	padding:0px;
+	font-family:"Source Sans Pro", "Lato", sans-serif;
+}
+.btn select{
+	-webkit-appearance: none;
+	-moz-appearance:none;
+	appearance:none;
+	outline:none;
+	border:none;
+	background:none;
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	font-size:20px;
+	cursor:pointer;
+	color:rgba(0,0,0,0);
+}
+.btn:hover{
+	background-color:#45a6f7;
+	color:#fff;
+}
+.btn.disabled{
+	color:#ccc;
+	background-color:rgba(0,0,0,0);
+	cursor:default;
+	border-color:#ccc;
+}
+
+
+#steptext{
+	position:absolute !important;
+	text-align:center;
+	z-index:888;
+	margin-left:-20px;
+	width:100%;
+	user-select:none;
+	-webkit-user-select:none;
+	-moz-user-select:none;
+	cursor:default;
+	padding-top:5px;
+	font-size:16px;
+	font-weight:700;
+}
+#steptext > *{
+	user-select:all;
+	-webkit-user-select:all;
+	-moz-user-select:all;
+}
+#steptext select:focus,#steptext input:focus,#varlist li .value input:focus{
+	background-color:rgba(69,166,247,0.2);
+}
+#steptext select,#steptext input, #varlist li .value input{
+	background:none;
+	border:none;
+	outline:none;
+	width:70px;
+	font-size:18px;
+	border:3px solid rgba(0,0,0,0);
+	border-bottom:3px solid #45a6f7;
+	font-family:"Source Sans Pro", "Lato", sans-serif;
+	border-radius:0px;
+	text-align:center;
+	font-weight:400;
+}
+
+#varlist{
+	list-style-type:none;
+	padding:0px;
+	margin:0px;
+	overflow-y:scroll; /* FIX THE OVERFLOW */ /* WE NEED TO SPECIFY A HEIGHT (OR MAYBE USE FLEX) */
+	overflow-x:hidden;
+}
+#varlist li{
+	margin:2px 20px;
+	display:flex;
+}
+.variable{
+	display:inline-block;
+	background-color:#45a6f7;
+	border-radius:20px;
+	padding:2px 15px;
+	margin-right:10px;
+	color:#fff;
+	cursor:move;
+	border:2px solid #3495d6;
+	font-weight:700;
+	flex:0 0 1;
+}
+#varlist li .value{
+	flex:1;
+	position:relative;
+	display:inline-block;
+	margin-left:10px;
+}
+#varlist li .value input{
+	width:100%;
+	margin:0px;
+	box-sizing:border-box;
+}
+
+body > .variable{
+	position:absolute;
+	top:-666;
+	left:-666;
+	z-index:1000;
+	pointer-events:none;
+}
+
+.noselect *,.noselect,.noselect input{
+	user-select:none !important;
+	-webkit-user-select:none !important;
+	-moz-user-select:none !important;
+	cursor:default;
+}
+.noselect input::selection{
+	background:rgba(0,0,0,0)
+}
+.dragging-number #steptext .steptext-e input{
+	border:3px solid #45f678;
+	cursor:crosshair;
+}
+body > .tempsvg{
+	position:absolute;
+	top:-66666;
+	left:-66666;
+	z-index:1000;
+	pointer-events:none;
+}
