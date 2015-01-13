@@ -1,6 +1,6 @@
 crel(document.body,
 	crel('header',{'id':'header'},
-		crel('h1',{'id':'title'},'Echoprax ', crel('sub','7.5.8'))
+		crel('h1',{'id':'title'},'Echoprax ', crel('sub','7.5.8'),playbtn = crel('button',{'class':'playbtn'},'play'))
 	),
 	crel('div',{'id':'content','data-channel':'view.el'})
 )
@@ -78,8 +78,8 @@ function play(){
 		var width = sprite.get('width');
 		var height = sprite.get('height');
 		this.data.sprites[sprite.get('name')] = {};
-		this.data.sprites[sprite.get('name')].width = width;
-		this.data.sprites[sprite.get('name')].height = height;
+		//this.data.sprites[sprite.get('name')].width = width;
+		//this.data.sprites[sprite.get('name')].height = height;
 		this.data.sprites[sprite.get('name')].behaviours = {};
 		for(var b = 0; b < sprite.get('behaviours').models.length; b++){
 			var behaviour = sprite.get('behaviours').models[b];
@@ -92,52 +92,64 @@ function play(){
 			}
 			for(var c = 0; c < behaviour.get('steps').models.length; c++){
 				var step = behaviour.get('steps').models[c];
-				this.data.sprites[sprite.get('name')].behaviours[behaviour.get('name')].steps.push(merge({},step))
+				this.data.sprites[sprite.get('name')].behaviours[behaviour.get('name')].steps.push(merge({},step.attr))
 			}
 		}
 	}
 
-	for(var a = 0; a < ge.scenes.sprites.length; a++){
-		
-	}
-
-	this.data.sprites[sprite.get('name')].sprite = ge.svg.rect(0,0,width,height);
-
 	this.data.spritelist = [];
+
+	for(var a = 0; a < ge.scene.get('sprites').length; a++){
+		var sprite = ge.scene.get('sprites')[a];
+		var object = {
+			x: sprite.x - ge.svg.node.parentElement.offsetLeft - sprite.sx/2,
+			y: sprite.y - ge.svg.node.parentElement.offsetTop - sprite.sy/2,
+			width: sprite.model.get('width') + sprite.sx,
+			height: sprite.model.get('height') + sprite.sy,
+			rotation: sprite.rotation
+		};
+		object.behaviours = merge({},this.data.sprites[sprite.model.get('name')].behaviours);
+		object.sprite = ge.svg.rect(object.x,object.y,object.width,object.height);
+		object.sprite.attr({
+			transform: 'rotate('+object.rotation+','+(object.x+object.width/2)+','+(object.y+object.height/2)+')'
+		})
+
+		this.data.spritelist.push(object);
+	}
 
 	console.log(this.data);
 
 	this.tick()
 }
 play.prototype.tick = function(){
-	for(var a in this.data.sprites){
-		for(var b in a.behaviours){
-			for(var c in b.steps){
-				
+	for(var a in this.data.spritelist){
+		var sprite = this.data.spritelist[a];
+		for(var b in sprite.behaviours){
+			var behaviour = sprite.behaviours[b];
+			for(var c in behaviour.steps){
+				var step = behaviour.steps[c];
+				for(var d in step.args){
+					var arg = step.args[d];
+					var value = step[arg];
+					if(value.constructor == ge.variable){
+						value = behaviour.variables[value.get('name')];
+					}
+					arg = (arg=='sx'?'width':arg);
+					arg = (arg=='sy'?'height':arg);
+					sprite[arg] += value;
+					//console.log(arg+' : '+value)
+				}
 			}
 		}
-	}
-	/*var steps = this.steps.models;
-	var sprite = this.sprite;
-	for(var i = 0; i < steps.length; i++){
-		var startx = Number(sprite.attr('x'));
-		var starty = Number(sprite.attr('y'));
-		var startwidth = Number(sprite.attr('width'));
-		var startheight = Number(sprite.attr('height'));
-		var startrotation = getRotation(sprite.transform().localMatrix);
-		var x = steps[i].get('x').constructor==ge.variable ? steps[i].get('x').get('value') : steps[i].get('x');
-		var y = steps[i].get('y').constructor==ge.variable ? steps[i].get('y').get('value') : steps[i].get('y');
-		var sx = steps[i].get('sx').constructor==ge.variable ? steps[i].get('sx').get('value') : steps[i].get('sx');
-		var sy = steps[i].get('sy').constructor==ge.variable ? steps[i].get('sy').get('value') : steps[i].get('sy');
-		var rotation = steps[i].get('rotation').constructor==ge.variable ? steps[i].get('rotation').get('value') : steps[i].get('rotation');
-		sprite.attr({
-			x: startx + x - sx/2,
-			y: starty + y - sy/2,
-			width: startwidth + sx,
-			height: startheight + sy,
-			transform: 'rotate('+(startrotation+rotation)+','+(startx+startwidth/2)+','+(starty+startheight/2)+')'
+		sprite.rotation = Math.round(sprite.rotation*100)/100;
+		sprite.sprite.attr({
+			x: sprite.x,
+			y: sprite.y,
+			width: sprite.width,
+			height: sprite.height,
+			transform: 'rotate('+sprite.rotation+','+(sprite.x+sprite.width/2)+','+(sprite.y+sprite.height/2)+')'
 		})
-	}*/
+	}
 
 	if(!this.stopped){
 		window.requestAnimationFrame(this.tick.bind(this));
@@ -147,9 +159,22 @@ play.prototype.stop = function(){
 	if(!this.stopped){
 		ge.svg.clear();
 		this.stopped = true;
-		ge.svg.node.appendChild(this.svgcache)
+		ge.view.current.get('init')();
 	}
 }
+
+var currentplay;
+playbtn.onclick = function(){
+	if(currentplay == undefined){
+		currentplay = new play();
+		playbtn.textContent = 'Stop';
+	}else{
+		currentplay.stop();
+		playbtn.textContent = 'Play';
+		currentplay = undefined;
+	}
+}
+
 /*function generatecode(){
 	var code = "var _canvas = document.querySelector('#c');\nvar _ctx = _canvas.getContext('2d');\n_canvas.width = '"+ge.gamesize.width+"px';\n_canvas.height = '"+ge.gamesize.height+"px';\n";
 	code += 'function merge(obj1, obj2) {for (var p in obj2) {try {if ( obj2[p].constructor==Object ) {obj1[p] = merge(obj1[p], obj2[p]);} else {obj1[p] = obj2[p];}} catch(e) {obj1[p] = obj2[p];}}return obj1;}\n'

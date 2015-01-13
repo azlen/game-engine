@@ -74,7 +74,7 @@
 			strokeWidth: 2,
 			fill: "none"
 		})
-		
+
 		for(var i = 0; i < sprites.length; i++){
 			var model = sprites[i].model;
 			var width = model.get('width');
@@ -133,12 +133,12 @@
 		}
 	}
 	spritedrag.mouseup = function(e){
-		if(spritedrag.dragging){
+		if(spritedrag.dragging && (e.toElement == ge.svg.node || ge.svg.node.contains(e.toElement))){
 			spritedrag.svg.remove();
 			ge.scene.get('sprites').push({
 				model:spritedrag.model,
-				x: e.clientX-viewboxOffsetLeft,
-				y: e.clientY-viewboxOffsetTop,
+				x: e.clientX-viewboxOffsetLeft-Number(spritedrag.sprite.attr('width'))/2,
+				y: e.clientY-viewboxOffsetTop-Number(spritedrag.sprite.attr('height'))/2,
 				sx: 0,
 				sy: 0,
 				rotation: 0
