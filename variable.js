@@ -16,6 +16,7 @@
 			steptexttemp:'Change '+variable.get('name')+' %s %e',
 			variable:variable,
 			args:['variable'],
+			varchange:0,
 
 		});
 		ge.currentBehaviour.get('steps').models.splice(ge.currentBehaviour.get('steps').models.indexOf(ge.currentStep)+1,0,thenewstep)

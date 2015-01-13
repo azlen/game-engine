@@ -185,9 +185,15 @@ play.prototype.tick = function(){
 				var step = behaviour.steps[c];
 				for(var d in step.args){
 					var arg = step.args[d];
+					if(arg == 'variable'){
+						arg = 'varchange';
+					}
 					var value = step[arg];
 					if(value.constructor == ge.variable){
 						value = behaviour.variables[value.get('name')];
+					}
+					if(arg == 'varchange'){
+						behaviour.variables[step['variable'].get('name')] += value;
 					}
 					arg = (arg=='sx'?'width':arg);
 					arg = (arg=='sy'?'height':arg);

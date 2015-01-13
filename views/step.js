@@ -187,15 +187,22 @@
 					select.value = ge.currentStep.get('prepos')
 					stepsteptext += ge.currentStep.get('prepos')
 				}else if(node.classList.contains('steptext-e')){
-					if(!isNaN(Number(ge.currentStep.get(args[0])))){
-						console.log('NOT VARIABLE')
+					if(!isNaN(Number(ge.currentStep.get(args[0]))) || args[0] == 'variable'){
 						var value = Number(ge.currentStep.get(args[0]));
+						if(args[0] == 'variable'){
+							value = ge.currentStep.get('varchange')
+						}
 						var input = ge.view.get('step').get('steptext-e').cloneNode(true);
 
 						node.setAttribute('data-var',args[0])
 
 						input.addEventListener('change',function(e){
-							ge.currentStep.set(e.target.parentElement.getAttribute('data-var'),Number(e.target.value))
+							var datavar = e.target.parentElement.getAttribute('data-var');
+							if(datavar == 'variable'){
+								ge.currentStep.set('varchange',Number(e.target.value))
+							}else{
+								ge.currentStep.set(datavar,Number(e.target.value))
+							}
 							clearTimeout(e.target.timeout)
 							e.target.timeout = setTimeout(ge.view.get('step').get('update'),500);
 						})
@@ -203,7 +210,6 @@
 						node.appendChild(input);
 						input.value = value;
 					}else if(ge.currentStep.get(args[0]).constructor == ge.variable){
-						console.log('VARIABLE')
 						var value = ge.currentStep.get(args[0]).get('value');
 						var model = ge.currentStep.get(args[0]);
 						var variable = ge.vartemp.cloneNode(true);
