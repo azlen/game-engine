@@ -111,7 +111,7 @@ h1,h2,h3,h4,h5,h6,ul{
 	border-radius:20px;
 	margin:20px;
 	width:210px;
-	cursor:pointer;
+	cursor:pointer !important;
 	outline:none;
 	transition:all .2s;
 	text-align:center;
@@ -144,7 +144,7 @@ h1,h2,h3,h4,h5,h6,ul{
 .btn.disabled{
 	color:#ccc;
 	background-color:rgba(0,0,0,0);
-	cursor:default;
+	cursor:default !important;
 	border-color:#ccc;
 }
 
@@ -250,5 +250,40 @@ body > .tempsvg{
 }
 
 .playbtn{
-	
+	float:right;
+	display:inline-block;
+	width:auto;
+	margin:0px;
+	padding:0px 20px;
+	height:40px;
+}
+.playbtn:first-letter{
+	text-transform: uppercase;
+}
+
+#events{
+	position:absolute;
+	z-index:999;
+	width:100%;
+	bottom:0px;
+	text-align:center;
+	user-select:none;
+	-webkit-user-select:none;
+	-moz-user-select:none;
+	padding-bottom:10px;
+}
+#events > *{
+	user-select:all;
+	-webkit-user-select:all;
+	-moz-user-select:all;
+}
+#events .btn{
+	width:32px;
+	display:inline-block;
+	margin:0px;
+}
+.event{
+	border:2px solid #ccc;
+	padding:3px 10px;
+	margin:0px 5px;
 }

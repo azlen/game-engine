@@ -18,7 +18,7 @@
 		tosy:0,*/
 	})
 
-	var backbtn,ul,svgcontainer,select,input,button,sprite,ul2;
+	var backbtn,ul,svgcontainer,select,input,button,sprite,ul2,eventbtn;
 	ge.view.get('step').set('el', 
 		crel('div', {'id':'container','class':'stepview'}, 
 			crel('div',{'id':'sidebar'},
@@ -41,11 +41,34 @@
 			),
 			crel('div',{'id':'svg-container'},
 				svgcontainer = crel('div',
-					crel('div',{'id':'steptext'}, '')
+					crel('div',{'id':'steptext'}, ''),
+					crel('div',{'id':'events'}, 'events : ',crel('span',{'data-channel':'eventlist:event'},crel('span',{'data-channel':'event.inner','class':'event'})),eventbtn = crel('div',{'class':'btn'},'+',crel('select',
+						crel('option',{disabled:'',selected:'',hidden:'',value:'+'},''),
+						crel('option','keypress'),
+						crel('option','collision')
+					)))
 				)
 			)
 		)
 	)
+
+	eventbtn.children[0].addEventListener('change',function(e){
+		var type = e.target.value;
+		var newevent = new ge.event({type:type});
+		newevent.set('inner',{
+			keypress:'When <select data-channel="keyboardkeys:key" onchange="this.model.set(\'data\',this.value)" value="'+ge.currentSprite.get('name')+'"><option data-channel="key.name"></option></select> key is pressed',
+			collision:'On collision with <select data-channel="spritelist:sprite" onchange="for(var i in ge.sprites.models){if(ge.sprites.models[i].get(\'name\') == this.value){this.model.set(\'data\',ge.sprites.models[i]);break;}}"><option data-channel="sprite.name"></option></select>'
+		}[type])
+		newevent.set('data',{
+			keypress:'left',
+			collision:ge.currentSprite
+		}[type])
+		ge.currentBehaviour.get('events').models.push(newevent);
+		ge.eventchannel.update();
+		ge.spritechannel.update();
+		ge.keyschannel.update();
+		e.target.children[0].selected = true;
+	})
 
 	button.children[0].addEventListener('change',function(e){
 		var type = e.target.value;
@@ -94,6 +117,19 @@
 		//stepchannel.model = ge.currentSprite.behaviours;
 		ge.stepchannel.changemodel(ge.currentBehaviour.get('steps'))
 		ge.varchannel.changemodel(ge.currentBehaviour.get('variables'))
+		ge.eventchannel.changemodel(ge.currentBehaviour.get('events'))
+		ge.keyschannel.update();
+		ge.spritechannel.update();
+		var events = document.querySelectorAll('.event')
+		for(var i = 0; i < events.length; i++){
+			var sel = events[i].querySelector('select');
+			console.log(sel.model)
+			if(sel.model.get('type') == 'keypress'){
+				sel.value = sel.model.get('data');
+			}else if(sel.model.get('type') == 'collision'){
+				sel.value = sel.model.get('data').get('name');
+			}
+		}
 
 		backbtn.onclick = back;
 
@@ -189,7 +225,10 @@
 			ge.currentStep.set('steptext',stepsteptext)
 		}
 		ge.stepchannel.update();
-		document.querySelector('#list').children[ge.currentBehaviour.get('steps').models.indexOf(ge.currentStep)].classList.add('selected')
+		var selected = document.querySelector('#list').children[ge.currentBehaviour.get('steps').models.indexOf(ge.currentStep)];
+		if(selected != undefined){
+			selected.classList.add('selected');
+		}
 
 		if(!sprite.dragging){
 			console.log('changed');

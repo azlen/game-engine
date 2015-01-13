@@ -134,7 +134,6 @@
 	}
 	spritedrag.mouseup = function(e){
 		if(spritedrag.dragging && (e.toElement == ge.svg.node || ge.svg.node.contains(e.toElement))){
-			spritedrag.svg.remove();
 			ge.scene.get('sprites').push({
 				model:spritedrag.model,
 				x: e.clientX-viewboxOffsetLeft-Number(spritedrag.sprite.attr('width'))/2,
@@ -144,6 +143,9 @@
 				rotation: 0
 			})
 			renderscene();
+		}
+		if(spritedrag.dragging){
+			spritedrag.svg.remove();
 		}
 		spritedrag.dragging = false;
 	}

@@ -5,10 +5,23 @@
 		value:666,
 	})
 
-	ge.vartemproot = crel('span',{'data-channel':'var.name','class':'variable root','onmousedown':'vardrag.mousedown(this)'});
+	ge.vartemproot = crel('span',{'data-channel':'var.name','class':'variable root','onmousedown':'vardrag.mousedown(this)','ondblclick':'addvartosteps(this)'});
 	ge.vartemp = crel('span',{'data-channel':'var.name','class':'variable','onmousedown':'vardrag.mousedown(this)'});
 
 	ge.varchannel = new ge.channel('varlist',new ge.collection(ge.variable,[]))
+
+	addvartosteps = function(variableEl){
+		var variable = variableEl.model;
+		var thenewstep = new ge.step({
+			steptexttemp:'Change '+variable.get('name')+' %s %e',
+			variable:variable,
+			args:['variable'],
+
+		});
+		ge.currentBehaviour.get('steps').models.splice(ge.currentBehaviour.get('steps').models.indexOf(ge.currentStep)+1,0,thenewstep)
+		ge.currentStep = thenewstep;
+		ge.view.get('step').get('update')();
+	}
 
 	vardrag = {
 

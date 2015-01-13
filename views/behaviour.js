@@ -12,7 +12,8 @@
 				ge.currentSprite.get('behaviours').models.push(new ge.behaviour({
 					name:value,
 					steps:new ge.collection(ge.step, []),
-					variables:new ge.collection(ge.variable, [])
+					variables:new ge.collection(ge.variable, []),
+					events:new ge.collection(ge.event, [])
 				}))
 				behaviourchannel.update();
 			}

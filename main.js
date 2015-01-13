@@ -1,6 +1,6 @@
 crel(document.body,
 	crel('header',{'id':'header'},
-		crel('h1',{'id':'title'},'Echoprax ', crel('sub','7.5.8'),playbtn = crel('button',{'class':'playbtn'},'play'))
+		crel('h1',{'id':'title'},'Echoprax ', crel('sub','7.5.8'),playbtn = crel('button',{'class':'playbtn btn'},'play'))
 	),
 	crel('div',{'id':'content','data-channel':'view.el'})
 )
@@ -62,6 +62,26 @@ function back(){
 window.onload = function(){
 	ge.view.set('scene')
 }
+
+window.addEventListener('keydown',function(e){
+	var kdown;
+	for(var i in keys){
+		if(keys[i] == e.keyCode){
+			kdown = i;
+		}
+	}
+	keysdown[kdown] = true;
+})
+window.addEventListener('keyup',function(e){
+	var kup;
+	for(var i in keys){
+		if(keys[i] == e.keyCode){
+			kup = i;
+		}
+	}
+	keysdown[kup] = false;
+})
+var keysdown = {};
 function play(){
 	this.svgcache = new DocumentFragment();
 	for(var i = 0; i < ge.svg.node.children.length; i++){
@@ -86,6 +106,12 @@ function play(){
 			this.data.sprites[sprite.get('name')].behaviours[behaviour.get('name')] = {};
 			this.data.sprites[sprite.get('name')].behaviours[behaviour.get('name')].variables = {};
 			this.data.sprites[sprite.get('name')].behaviours[behaviour.get('name')].steps = [];
+			this.data.sprites[sprite.get('name')].behaviours[behaviour.get('name')].events = [];
+
+			for(var c = 0; c < behaviour.get('events').models.length; c++){
+				var ev = behaviour.get('events').models[c];
+				this.data.sprites[sprite.get('name')].behaviours[behaviour.get('name')].events.push(merge({},ev.attr))
+			}
 			for(var c = 0; c < behaviour.get('variables').models.length; c++){
 				var variable = behaviour.get('variables').models[c];
 				this.data.sprites[sprite.get('name')].behaviours[behaviour.get('name')].variables[variable.get('name')] = variable.get('value');
@@ -102,6 +128,7 @@ function play(){
 	for(var a = 0; a < ge.scene.get('sprites').length; a++){
 		var sprite = ge.scene.get('sprites')[a];
 		var object = {
+			name: sprite.model.get('name'),
 			x: sprite.x - ge.svg.node.parentElement.offsetLeft - sprite.sx/2,
 			y: sprite.y - ge.svg.node.parentElement.offsetTop - sprite.sy/2,
 			width: sprite.model.get('width') + sprite.sx,
@@ -126,6 +153,34 @@ play.prototype.tick = function(){
 		var sprite = this.data.spritelist[a];
 		for(var b in sprite.behaviours){
 			var behaviour = sprite.behaviours[b];
+			var cont = false;
+			for(var d in behaviour.events){
+				var ev = behaviour.events[d];
+				if(ev.type == 'keypress'){
+					if(keysdown[ev.data] != true){
+						cont = true;
+					}
+				}else if(ev.type == 'collision'){
+					for(var e in this.data.spritelist){
+						var testsprite = this.data.spritelist[e];
+						if(sprite == testsprite){
+							
+						}else if(testsprite.name == ev.data.get('name')){
+							var rect1 = sprite.sprite.getBBox();
+							var rect2 = testsprite.sprite.getBBox();
+							if (rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x && rect1.y < rect2.y + rect2.height && rect1.height + rect1.y > rect2.y) {
+							    console.log('collision')
+							}else{
+								cont = true;
+							}
+						}
+					}
+				}
+			}
+			if(cont){
+				console.log('continue')
+				continue;
+			}
 			for(var c in behaviour.steps){
 				var step = behaviour.steps[c];
 				for(var d in step.args){
