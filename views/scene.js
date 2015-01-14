@@ -22,7 +22,8 @@
 				console.log('addsprite')
 				ge.sprites.models.push(new ge.sprite({
 					name:value,
-					behaviours:new ge.collection(ge.behaviour, [])
+					behaviours:new ge.collection(ge.behaviour, []),
+					variables:new ge.collection(ge.variable, [])
 				}))
 				ge.spritechannel.update();
 			}

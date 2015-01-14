@@ -1,6 +1,6 @@
 crel(document.body,
 	crel('header',{'id':'header'},
-		crel('h1',{'id':'title'},'Echoprax ', crel('sub','7.5.8'),playbtn = crel('button',{'class':'playbtn btn'},'play'))
+		crel('h1',{'id':'title'},'Echoprax ', crel('sub','by Azlen'),playbtn = crel('button',{'class':'playbtn btn'},'play'))
 	),
 	crel('div',{'id':'content','data-channel':'view.el'})
 )
@@ -98,9 +98,17 @@ function play(){
 		var width = sprite.get('width');
 		var height = sprite.get('height');
 		this.data.sprites[sprite.get('name')] = {};
+
 		//this.data.sprites[sprite.get('name')].width = width;
 		//this.data.sprites[sprite.get('name')].height = height;
 		this.data.sprites[sprite.get('name')].behaviours = {};
+		this.data.sprites[sprite.get('name')].variables = {};
+
+		for(var b = 0; b < sprite.get('variables').models.length; b++){
+			var variable = sprite.get('variables').models[b];
+			this.data.sprites[sprite.get('name')].variables[variable.get('name')] = {value:variable.get('value')};
+		}
+
 		for(var b = 0; b < sprite.get('behaviours').models.length; b++){
 			var behaviour = sprite.get('behaviours').models[b];
 			this.data.sprites[sprite.get('name')].behaviours[behaviour.get('name')] = {};
@@ -114,8 +122,13 @@ function play(){
 			}
 			for(var c = 0; c < behaviour.get('variables').models.length; c++){
 				var variable = behaviour.get('variables').models[c];
-				this.data.sprites[sprite.get('name')].behaviours[behaviour.get('name')].variables[variable.get('name')] = variable.get('value');
+				this.data.sprites[sprite.get('name')].behaviours[behaviour.get('name')].variables[variable.get('name')] = {value:variable.get('value')};
 			}
+			for(var c in this.data.sprites[sprite.get('name')].variables){
+				var variable = this.data.sprites[sprite.get('name')].variables[c];
+				this.data.sprites[sprite.get('name')].behaviours[behaviour.get('name')].variables[c] = variable;
+			}
+
 			for(var c = 0; c < behaviour.get('steps').models.length; c++){
 				var step = behaviour.get('steps').models[c];
 				this.data.sprites[sprite.get('name')].behaviours[behaviour.get('name')].steps.push(merge({},step.attr))
@@ -190,10 +203,10 @@ play.prototype.tick = function(){
 					}
 					var value = step[arg];
 					if(value.constructor == ge.variable){
-						value = behaviour.variables[value.get('name')];
+						value = behaviour.variables[value.get('name')].value;
 					}
 					if(arg == 'varchange'){
-						behaviour.variables[step['variable'].get('name')] += value;
+						behaviour.variables[step['variable'].get('name')].value += value;
 					}
 					arg = (arg=='sx'?'width':arg);
 					arg = (arg=='sy'?'height':arg);

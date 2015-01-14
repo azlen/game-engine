@@ -5,6 +5,12 @@
 		value:666,
 	})
 
+	varselect = crel('select',
+						crel('option',{disabled:'',selected:'',hidden:'',value:'+'},''),
+						crel('option','number'),
+						crel('option','string')
+					);
+
 	ge.vartemproot = crel('span',{'data-channel':'var.name','class':'variable root','onmousedown':'vardrag.mousedown(this)','ondblclick':'addvartosteps(this)'});
 	ge.vartemp = crel('span',{'data-channel':'var.name','class':'variable','onmousedown':'vardrag.mousedown(this)'});
 
@@ -36,6 +42,9 @@
 			vardrag.el.classList.remove('root');
 		}else{
 			vardrag.el = el;
+			console.log(el.parentElement.getAttribute('data-var'));
+			ge.currentStep.set(vardrag.el.parentElement.getAttribute('data-var'),0)
+			ge.view.get('step').get('update')();
 		}
 		
 		document.body.appendChild(vardrag.el);

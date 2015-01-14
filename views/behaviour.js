@@ -20,12 +20,18 @@
 		});
 	}
 
-	var backbtn,button,ul,svgcontainer;
+	var backbtn,button,ul,svgcontainer,ul2;
 	ge.view.get('behaviour').set('el', 
 		crel('div', {'id':'container','class':'behaviour'}, 
 			crel('div',{'id':'sidebar'},
 				backbtn = crel('div',{'class':'btn'},'<'),
 				crel('h2','Attributes'),
+				ul2 = crel('ul',{'id':'varlist','data-channel':'varlist:var'},
+					crel('li',ge.vartemproot.cloneNode(true),' : ',crel('span',{'data-channel':'var.el','class':'value'}))
+				),
+				spritevariablebutton = crel('div',{class:'btn'},'+',
+					varselect.cloneNode(true)
+				),
 				crel('h2','Behaviours'),
 				ul = crel('ul',{'id':'list','data-channel':'behaviourlist:behaviour'},
 					crel('li',{'data-channel':'behaviour.name','onclick':'this.anim.stop(); this.blur(); ge.currentBehaviour = this.model; ge.view.set("step")','onmouseover':'this.anim = new animation(this.model)','onmouseout':'this.anim.stop()'})
@@ -47,8 +53,8 @@
 
 		ge.svg.resize();
 
-		behaviourchannel.model = ge.currentSprite.get('behaviours');
-		behaviourchannel.update();
+		behaviourchannel.changemodel(ge.currentSprite.get('behaviours'));
+		ge.varchannel.changemodel(ge.currentSprite.get('variables'));
 
 		button.onclick = addbehaviour;
 		backbtn.onclick = back;

@@ -25,14 +25,10 @@
 				backbtn = crel('button',{'class':'btn'},'<'),
 				crel('h2','Variables'),
 				ul2 = crel('ul',{'id':'varlist','data-channel':'varlist:var'},
-					crel('li',ge.vartemproot,' : ',crel('span',{'data-channel':'var.el','class':'value'}))
+					crel('li',ge.vartemproot.cloneNode(true),' : ',crel('span',{'data-channel':'var.el','class':'value'}))
 				),
 				button = crel('div',{class:'btn'},'+',
-					crel('select',
-						crel('option',{disabled:'',selected:'',hidden:'',value:'+'},''),
-						crel('option','number'),
-						crel('option','string')
-					)
+					varselect.cloneNode(true)
 				),
 				crel('h2','Steps'),
 				ul = crel('ul',{'id':'list','data-channel':'steplist:step'},
@@ -70,7 +66,7 @@
 		e.target.children[0].selected = true;
 	})
 
-	button.children[0].addEventListener('change',function(e){
+	createvariable = function(e){
 		var type = e.target.value;
 		vex.dialog.prompt({
 			message: 'What do you wish to name this variable?',
@@ -88,14 +84,25 @@
 					var value = {number:Number(e.target.value),string:e.target.value}[e.target.model.get('type')]
 					e.target.model.set('value',value)
 					clearTimeout(e.target.timeout)
-					e.target.timeout = setTimeout(ge.view.get('step').get('update'),500);
+					if(ge.view.current == ge.view.get('step')){
+						e.target.timeout = setTimeout(ge.view.get('step').get('update'),500);
+					}
 				})
-				ge.currentBehaviour.get('variables').models.push(variable)
-				ge.varchannel.update();
+				if(ge.view.current == ge.view.get('behaviour')){
+					ge.currentSprite.get('variables').models.push(variable);
+					ge.varchannel.update();
+				}else if(ge.view.current == ge.view.get('step')){
+					ge.currentBehaviour.get('variables').models.push(variable);
+					ge.view.get('step').get('update')();
+				}
+				
 			}
 		});
 		e.target.children[0].selected = true;
-	})
+	}
+
+	button.children[0].addEventListener('change',createvariable)
+	spritevariablebutton.children[0].addEventListener('change',createvariable)
 
 	ge.view.get('step').set('steptext-s',
 		select = crel('select',
@@ -116,7 +123,7 @@
 
 		//stepchannel.model = ge.currentSprite.behaviours;
 		ge.stepchannel.changemodel(ge.currentBehaviour.get('steps'))
-		ge.varchannel.changemodel(ge.currentBehaviour.get('variables'))
+
 		ge.eventchannel.changemodel(ge.currentBehaviour.get('events'))
 		ge.keyschannel.update();
 		ge.spritechannel.update();
@@ -165,6 +172,10 @@
 	})
 
 	ge.view.get('step').set('update', function(){
+		ge.varcollection = new ge.collection(ge.variable,[])
+		ge.varcollection.models = ge.varcollection.models.concat(ge.currentSprite.get('variables').models.concat(ge.currentBehaviour.get('variables').models));
+		ge.varchannel.changemodel(ge.varcollection)
+
 		var steptext = ge.currentStep==undefined?'':ge.currentStep.get('steptexttemp');
 		var args = ge.currentStep==undefined?[]:ge.currentStep.get('args').slice(0);
 
@@ -187,6 +198,7 @@
 					select.value = ge.currentStep.get('prepos')
 					stepsteptext += ge.currentStep.get('prepos')
 				}else if(node.classList.contains('steptext-e')){
+					args[0] = (args[0]=='variable'?'varchange':args[0]);
 					if(!isNaN(Number(ge.currentStep.get(args[0]))) || args[0] == 'variable'){
 						var value = Number(ge.currentStep.get(args[0]));
 						if(args[0] == 'variable'){
@@ -216,6 +228,8 @@
 						variable.model = model;
 						variable.setAttribute('data-channel','variable-'+model.get('name')+'.name')
 						node.appendChild(variable);
+
+						node.setAttribute('data-var',args[0])
 
 						model.get('channel').update();
 					}
