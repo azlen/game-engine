@@ -1,6 +1,6 @@
 crel(document.body,
 	crel('header',{'id':'header'},
-		crel('h1',{'id':'title'},'Echoprax ', crel('sub','by Azlen'),playbtn = crel('button',{'class':'playbtn btn'},'play'))
+		crel('h1',{'id':'title'},'Game Engine ', crel('sub','by Azlen'),playbtn = crel('button',{'class':'playbtn btn'},'play'))
 	),
 	crel('div',{'id':'content','data-channel':'view.el'})
 )
